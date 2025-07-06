@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Register</title>
+</head>
+<body>
+    <h3>Test API Register</h3>
+
+    <label>Email:</label>
+    <input type="text" id="email" value="test@example.com"><br><br>
+
+    <label>Password:</label>
+    <input type="password" id="password" value="123456"><br><br>
+
+    <label>Name:</label>
+    <input type="text" id="name" value="Test User"><br><br>
+
+    <label>Role:</label>
+    <select id="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+    </select><br><br>
+
+    <button onclick="register()">Register</button>
+
+    <h4>Kết quả:</h4>
+    <pre id="result"></pre>
+
+    <script>
+    function register() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        const role = document.getElementById('role').value;
+
+        fetch('http://localhost:3000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, name, role })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('result').textContent = 'Lỗi kết nối server';
+        });
+    }
+    </script>
+<h3>Test API Login</h3>
+
+<label>Email:</label>
+<input type="text" id="loginEmail" value="test@example.com"><br><br>
+
+<label>Password:</label>
+<input type="password" id="loginPassword" value="123456"><br><br>
+
+<button onclick="login()">Login</button>
+
+<h4>Kết quả Login:</h4>
+<pre id="loginResult"></pre>
+
+<script>
+function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        document.getElementById('loginResult').textContent = JSON.stringify(data, null, 2);
+
+        // Nếu trả về token, tự động đổ vào ô token để tiện test tiếp
+        if (data.token) {
+            document.getElementById('token').value = data.token;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('loginResult').textContent = 'Lỗi kết nối server';
+    });
+}
+</script>
+<h3>Test API Get User Info</h3>
+<label>Token:</label>
+<input type="text" id="token" value=""></input><br><br>
+<button onclick="getUserInfo()">Get User Info</button>
+<h4>Kết quả Get User Info:</h4>
+<pre id="userInfoResult"></pre>
+
+<script>
+function getUserInfo() {
+    const token = document.getElementById('token').value;
+
+    fetch('http://localhost:3000/api/auth/user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        document.getElementById('userInfoResult').textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('userInfoResult').textContent = 'Lỗi kết nối server';
+    });
+}
+</script>
+</body>
+</html>
